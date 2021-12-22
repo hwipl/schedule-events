@@ -1,7 +1,9 @@
 package event
 
 import (
+	"context"
 	"log"
+	"os/exec"
 	"time"
 )
 
@@ -10,6 +12,7 @@ type Event struct {
 	Command   string
 	StartDate time.Time
 	StopDate  time.Time
+	Timeout   time.Duration
 	Periodic  bool
 	Wait      string
 	done      bool
@@ -17,7 +20,13 @@ type Event struct {
 
 // Run executes the event's command once
 func (e *Event) Run() {
-	// TODO: implement it
+	ctx, cancel := context.WithTimeout(context.Background(), e.Timeout)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, e.Command)
+	if err := cmd.Run(); err != nil {
+		log.Println(err)
+	}
 }
 
 // getWait returns the next wait duration for the event
