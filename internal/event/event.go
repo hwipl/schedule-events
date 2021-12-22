@@ -31,8 +31,8 @@ func (e *Event) Run() {
 	}
 }
 
-// getWait returns the next wait duration for the event
-func (e *Event) getWait() time.Duration {
+// nextWait returns the next wait duration for the event
+func (e *Event) nextWait() time.Duration {
 	// get minimum and maximum wait times
 	min, max := e.WaitMin, e.WaitMax
 	if min < 0 {
@@ -81,7 +81,7 @@ func (e *Event) Schedule() {
 
 	// schedule periodic executions
 	for e.Periodic && !e.done {
-		wait = e.getWait()
+		wait = e.nextWait()
 		e.scheduleWait(wait)
 	}
 }
