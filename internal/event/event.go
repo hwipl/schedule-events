@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"log"
+	"math/rand"
 	"os/exec"
 	"time"
 )
@@ -14,7 +15,8 @@ type Event struct {
 	StopDate  time.Time
 	Timeout   time.Duration
 	Periodic  bool
-	Wait      string
+	WaitMin   time.Duration
+	WaitMax   time.Duration
 	done      bool
 }
 
@@ -31,8 +33,30 @@ func (e *Event) Run() {
 
 // getWait returns the next wait duration for the event
 func (e *Event) getWait() time.Duration {
-	// TODO: parse Wait and return proper wait duration
-	return 5 * time.Second
+	// get minimum and maximum wait times
+	min, max := e.WaitMin, e.WaitMax
+	if min < 0 {
+		min = 0
+	}
+	if max < 0 {
+		max = 0
+	}
+	if max < min {
+		max = min
+	}
+
+	// get next wait time, non-random case
+	if min == max {
+		return min
+	}
+
+	// get next wait time, random in milliseconds granularity
+	diff := max.Milliseconds() - min.Milliseconds()
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
+	t := min.Milliseconds() + r.Int63n(diff)
+
+	return time.Duration(t) * time.Millisecond
 }
 
 // scheduleWait schedules the event after the wait duration
