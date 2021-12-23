@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"math/rand"
 	"os/exec"
@@ -84,4 +85,13 @@ func (e *Event) Schedule() {
 		wait = e.nextWait()
 		e.scheduleWait(wait)
 	}
+}
+
+// JSON returns the event as json
+func (e *Event) JSON() ([]byte, error) {
+	b, err := json.Marshal(e)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
