@@ -95,3 +95,13 @@ func (e *Event) JSON() ([]byte, error) {
 	}
 	return b, nil
 }
+
+// NewFromJSON parses an event from json
+func NewFromJSON(b []byte) (*Event, error) {
+	e := &Event{}
+	err := json.Unmarshal(b, e)
+	if err != nil {
+		return nil, err
+	}
+	return e, nil
+}
