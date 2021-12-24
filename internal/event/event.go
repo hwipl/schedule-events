@@ -1,12 +1,12 @@
 package event
 
 import (
-	"context"
 	"encoding/json"
 	"log"
 	"math/rand"
-	"os/exec"
 	"time"
+
+	"github.com/hwipl/schedule-events/internal/command"
 )
 
 // Event is an event that can be scheduled
@@ -23,11 +23,9 @@ type Event struct {
 
 // Run executes the event's command once
 func (e *Event) Run() {
-	ctx, cancel := context.WithTimeout(context.Background(), e.Timeout)
-	defer cancel()
-
-	cmd := exec.CommandContext(ctx, e.Command)
-	if err := cmd.Run(); err != nil {
+	c := command.Get(e.Command)
+	err := c.Run()
+	if err != nil {
 		log.Println(err)
 	}
 }
