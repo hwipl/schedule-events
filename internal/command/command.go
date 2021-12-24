@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"log"
 	"os/exec"
 	"sync"
 	"time"
@@ -51,14 +50,12 @@ type Command struct {
 }
 
 // Run executes the command
-func (c *Command) Run() {
+func (c *Command) Run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, c.Executable, c.Arguments...)
-	if err := cmd.Run(); err != nil {
-		log.Println(err)
-	}
+	return cmd.Run()
 }
 
 // Add add command to the command list
