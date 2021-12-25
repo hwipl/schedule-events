@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"os/exec"
+	"sort"
 	"sync"
 	"time"
 )
@@ -34,12 +35,16 @@ func (c *commandList) Get(name string) *Command {
 	return c.m[name]
 }
 
-// List returns all commands
+// List returns all commands sorted by their name
 func (c *commandList) List() []*Command {
 	cmds := []*Command{}
 	for _, c := range c.m {
 		cmds = append(cmds, c)
 	}
+	sort.Slice(cmds, func(i, j int) bool {
+		return cmds[i].Name <
+			cmds[j].Name
+	})
 	return cmds
 }
 
