@@ -34,6 +34,15 @@ func (c *commandList) Get(name string) *Command {
 	return c.m[name]
 }
 
+// List returns all commands
+func (c *commandList) List() []*Command {
+	cmds := []*Command{}
+	for _, c := range c.m {
+		cmds = append(cmds, c)
+	}
+	return cmds
+}
+
 // newCommandList returns a new commandList
 func newCommandList() *commandList {
 	return &commandList{
@@ -66,4 +75,9 @@ func Add(command *Command) {
 // Get returns the command identified by name
 func Get(name string) *Command {
 	return commands.Get(name)
+}
+
+// List returns all commands in the command list
+func List() []*Command {
+	return commands.List()
 }
