@@ -3,6 +3,7 @@ package command
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 // TestCommandListAdd tests adding commands to a commandList
@@ -91,4 +92,39 @@ func TestCommandListList(t *testing.T) {
 	cmdList.Add(cmd2)
 	cmdList.Add(cmd3)
 	test([]*Command{cmd1, cmd2, cmd3}, cmdList.List())
+}
+
+// TestCommandRun tests running commands
+func TestCommandRun(t *testing.T) {
+	cmd1 := &Command{
+		Name:       "list",
+		Executable: "ls",
+	}
+	cmd2 := &Command{
+		Name:       "sleep",
+		Executable: "sleep",
+		Arguments:  []string{"1"},
+	}
+
+	// test timeout, no args
+	if err := cmd1.Run(); err == nil {
+		t.Errorf("got %v, want !nil", err)
+	}
+
+	// test timeout, with args
+	if err := cmd2.Run(); err == nil {
+		t.Errorf("got %v, want !nil", err)
+	}
+
+	// test successful run, no args
+	cmd1.Timeout = 10 * time.Second
+	if err := cmd1.Run(); err != nil {
+		t.Errorf("got %v, want %v", err, nil)
+	}
+
+	// test successful run, with args
+	cmd2.Timeout = 10 * time.Second
+	if err := cmd2.Run(); err != nil {
+		t.Errorf("got %v, want %v", err, nil)
+	}
 }
