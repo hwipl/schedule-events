@@ -72,6 +72,29 @@ func TestScheduleWait(t *testing.T) {
 	e2.scheduleWait(5 * time.Second) // expired
 }
 
+// TestSchedule tests scheduling events
+func TestSchedule(t *testing.T) {
+	// start time in the past
+	e1 := &Event{}
+	e1.Schedule()
+
+	// start time now (probably slightly in the past ;))
+	e2 := &Event{StartDate: time.Now()}
+	e2.Schedule()
+
+	// start time in the future
+	e3 := &Event{StartDate: time.Now().Add(time.Second)}
+	e3.Schedule()
+
+	// periodic event
+	e4 := &Event{
+		StopDate: time.Now().Add(time.Second),
+		Periodic: true,
+		WaitMin:  100 * time.Millisecond,
+	}
+	e4.Schedule()
+}
+
 // TestJSON tests conversion from and to json
 func TestJSON(t *testing.T) {
 	e1 := &Event{
