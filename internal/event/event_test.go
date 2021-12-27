@@ -52,6 +52,26 @@ func TestNextWait(t *testing.T) {
 	}
 }
 
+// TestScheduleWait tests scheduling the event after a wait time
+func TestScheduleWait(t *testing.T) {
+	// expired event (StopDate: 0)
+	e1 := &Event{}
+	e1.scheduleWait(-1)
+	e1.scheduleWait(0)
+	e1.scheduleWait(1 * time.Second)
+
+	// event that will expire in 5 seconds from now
+	e2 := &Event{
+		StartDate: time.Now(),
+		StopDate:  time.Now().Add(5 * time.Second),
+	}
+	e2.scheduleWait(-1)
+	e2.scheduleWait(0)
+	e2.scheduleWait(1 * time.Second)
+	e2.scheduleWait(4 * time.Second) // expired
+	e2.scheduleWait(5 * time.Second) // expired
+}
+
 // TestJSON tests conversion from and to json
 func TestJSON(t *testing.T) {
 	e1 := &Event{
