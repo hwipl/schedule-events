@@ -8,16 +8,22 @@ import (
 	"github.com/hwipl/schedule-events/internal/server"
 )
 
+var (
+	// parsed command line arguments
+	commandsFile = "config.json"
+)
+
 // parseCommandLine parses the command line arguments
 func parseCommandLine() {
-	cmdFile := flag.String("commands", "", "read commands from `file`")
+	flag.StringVar(&commandsFile, "commands", commandsFile,
+		"read commands from `file`")
 	flag.Parse()
 
 	// parse commands file
-	if *cmdFile == "" {
+	if commandsFile == "" {
 		log.Fatal("no commands file specified")
 	}
-	if err := command.CommandsFromJSON(*cmdFile); err != nil {
+	if err := command.CommandsFromJSON(commandsFile); err != nil {
 		log.Fatal(err)
 	}
 }
