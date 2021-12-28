@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+	"encoding/json"
+	"os"
 	"os/exec"
 	"sort"
 	"sync"
@@ -88,4 +90,26 @@ func Get(name string) *Command {
 // List returns all commands in the command list
 func List() []*Command {
 	return commands.List()
+}
+
+// CommandsFromJSON loads commands from the json file in path and adds them to
+// the command list
+func CommandsFromJSON(path string) error {
+	// read file
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	// parse commands
+	cmds := []*Command{}
+	if err := json.Unmarshal(file, &cmds); err != nil {
+		return err
+	}
+
+	// add commands to command list
+	for _, c := range cmds {
+		Add(c)
+	}
+	return nil
 }
