@@ -11,13 +11,22 @@ import (
 var (
 	// parsed command line arguments
 	commandsFile = "config.json"
+	serverAddr   = ":8080"
 )
 
 // parseCommandLine parses the command line arguments
 func parseCommandLine() {
+	// set command line arguments
 	flag.StringVar(&commandsFile, "commands", commandsFile,
 		"read commands from `file`")
+	flag.StringVar(&serverAddr, "address", serverAddr,
+		"listen on or connect to `addr`")
 	flag.Parse()
+
+	// parse address
+	if serverAddr == "" {
+		log.Fatal("no address specified")
+	}
 
 	// parse commands file
 	if commandsFile == "" {
@@ -31,5 +40,5 @@ func parseCommandLine() {
 // Run is the main entry point
 func Run() {
 	parseCommandLine()
-	server.Run(":8080")
+	server.Run(serverAddr)
 }
