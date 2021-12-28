@@ -26,9 +26,9 @@ func handleCommands(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Runs starts the server
-func Run() {
+// Runs starts the server listening on addr
+func Run(addr string) {
 	http.HandleFunc("/commands/", handleCommands)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(addr, nil))
 }

@@ -25,5 +25,5 @@ func parseCommandLine() {
 // Run is the main entry point
 func Run() {
 	parseCommandLine()
-	server.Run()
+	server.Run(":8080")
 }
