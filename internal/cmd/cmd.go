@@ -12,6 +12,7 @@ var (
 	// parsed command line arguments
 	commandsFile = "config.json"
 	serverAddr   = ":8080"
+	serverMode   = false
 )
 
 // parseCommandLine parses the command line arguments
@@ -21,6 +22,7 @@ func parseCommandLine() {
 		"read commands from `file`")
 	flag.StringVar(&serverAddr, "address", serverAddr,
 		"listen on or connect to `addr`")
+	flag.BoolVar(&serverMode, "server", serverMode, "run as server")
 	flag.Parse()
 
 	// parse address
@@ -29,16 +31,21 @@ func parseCommandLine() {
 	}
 
 	// parse commands file
-	if commandsFile == "" {
-		log.Fatal("no commands file specified")
-	}
-	if err := command.CommandsFromJSON(commandsFile); err != nil {
-		log.Fatal(err)
+	if serverMode {
+		if commandsFile == "" {
+			log.Fatal("no commands file specified")
+		}
+		err := command.CommandsFromJSON(commandsFile)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
 // Run is the main entry point
 func Run() {
 	parseCommandLine()
-	server.Run(serverAddr)
+	if serverMode {
+		server.Run(serverAddr)
+	}
 }
