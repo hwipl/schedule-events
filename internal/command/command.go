@@ -37,6 +37,9 @@ func (c *commandList) Get(name string) *Command {
 
 // List returns all commands sorted by their name
 func (c *commandList) List() []*Command {
+	c.Lock()
+	defer c.Unlock()
+
 	cmds := []*Command{}
 	for _, c := range c.m {
 		cmds = append(cmds, c)
