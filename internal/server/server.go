@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/hwipl/schedule-events/internal/command"
+	"github.com/hwipl/schedule-events/internal/event"
 )
 
 // handleCommandsGet handles a client "commands" GET request
@@ -26,9 +27,28 @@ func handleCommands(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleEventsGet handles a client "events" GET request
+func handleEventsGet(w http.ResponseWriter, r *http.Request) {
+	events := event.List()
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(events)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// handleEvents handles a client "events" request
+func handleEvents(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		handleEventsGet(w, r)
+	}
+}
+
 // Runs starts the server listening on addr
 func Run(addr string) {
 	http.HandleFunc("/commands/", handleCommands)
+	http.HandleFunc("/events/", handleEvents)
 
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
