@@ -1,9 +1,98 @@
 package event
 
 import (
+	"reflect"
 	"testing"
 	"time"
 )
+
+// TestEventListAdd tests adding events to a eventList
+func TestEventListAdd(t *testing.T) {
+	// prepare event list, some test events, test function
+	evtList := newEventList()
+	evt1 := &Event{Name: "evt1"}
+	evt2 := &Event{Name: "evt1"} // duplicate name for overwrite test
+	evt3 := &Event{Name: "evt3"}
+	evt4 := &Event{Name: "evt4"}
+	test := func(want, got *Event) {
+		if got != want {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	}
+
+	// test adding new entry to empty list
+	evtList.Add(evt1)
+	test(evt1, evtList.Get(evt1.Name))
+
+	// test overwriting existing entry
+	evtList.Add(evt2)
+	test(evt2, evtList.Get(evt1.Name))
+
+	// test adding more entries
+	evtList.Add(evt3)
+	evtList.Add(evt4)
+	test(evt2, evtList.Get(evt2.Name))
+	test(evt3, evtList.Get(evt3.Name))
+	test(evt4, evtList.Get(evt4.Name))
+}
+
+// TestEventListGet tests getting events from a eventList
+func TestEventListGet(t *testing.T) {
+	// prepare event list, some test events, test function
+	evtList := newEventList()
+	evt1 := &Event{Name: "evt1"}
+	evt2 := &Event{Name: "evt2"}
+	evt3 := &Event{Name: "evt3"}
+	test := func(want, got *Event) {
+		if got != want {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	}
+
+	// test empty list
+	test(nil, evtList.Get("does not exist"))
+
+	// test with 1 entry
+	evtList.Add(evt1)
+
+	test(evt1, evtList.Get(evt1.Name))
+	test(nil, evtList.Get("does not exist"))
+
+	// test with more entries
+	evtList.Add(evt2)
+	evtList.Add(evt3)
+
+	test(evt1, evtList.Get(evt1.Name))
+	test(evt2, evtList.Get(evt2.Name))
+	test(evt3, evtList.Get(evt3.Name))
+	test(nil, evtList.Get("does not exist"))
+}
+
+// TestEventListList tests listing events in a eventList
+func TestEventListList(t *testing.T) {
+	// prepare event list, some test events, test function
+	evtList := newEventList()
+	evt1 := &Event{Name: "evt1"}
+	evt2 := &Event{Name: "evt2"}
+	evt3 := &Event{Name: "evt3"}
+	test := func(want, got []*Event) {
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	}
+
+	// test empty list
+	test([]*Event{}, evtList.List())
+
+	// test one element
+	evtList.Add(evt1)
+	test([]*Event{evt1}, evtList.List())
+
+	// test more elements
+	evtList.Add(evt2)
+	evtList.Add(evt3)
+	test([]*Event{evt1, evt2, evt3}, evtList.List())
+}
 
 // TestNextWait tests getting the next wait time
 func TestNextWait(t *testing.T) {
