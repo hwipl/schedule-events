@@ -11,6 +11,7 @@ import (
 
 // Event is an event that can be scheduled
 type Event struct {
+	Name      string
 	Command   string
 	StartDate time.Time
 	StopDate  time.Time
