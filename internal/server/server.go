@@ -8,7 +8,7 @@ import (
 	"github.com/hwipl/schedule-events/internal/command"
 )
 
-// handleCommands handles a client "commands" GET request
+// handleCommandsGet handles a client "commands" GET request
 func handleCommandsGet(w http.ResponseWriter, r *http.Request) {
 	cmds := command.List()
 	w.Header().Set("Content-Type", "application/json")
