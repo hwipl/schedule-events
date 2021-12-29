@@ -4,10 +4,62 @@ import (
 	"encoding/json"
 	"log"
 	"math/rand"
+	"sort"
+	"sync"
 	"time"
 
 	"github.com/hwipl/schedule-events/internal/command"
 )
+
+var (
+	// events stores a list of all events
+	events = newEventList()
+)
+
+// eventList is a list of events identified by their name
+type eventList struct {
+	sync.Mutex
+	m map[string]*Event
+}
+
+// Add adds event to the event list
+func (e *eventList) Add(event *Event) {
+	e.Lock()
+	defer e.Unlock()
+
+	e.m[event.Name] = event
+}
+
+// Get returns the event identified by its name
+func (e *eventList) Get(name string) *Event {
+	e.Lock()
+	defer e.Unlock()
+
+	return e.m[name]
+}
+
+// List returns all events sorted by their name
+func (e *eventList) List() []*Event {
+	e.Lock()
+	defer e.Unlock()
+
+	evts := []*Event{}
+	for _, evt := range e.m {
+		evts = append(evts, evt)
+	}
+	sort.Slice(evts, func(i, j int) bool {
+		return evts[i].Name <
+			evts[j].Name
+	})
+	return evts
+}
+
+// newEventList returns a new eventList
+func newEventList() *eventList {
+	return &eventList{
+		m: make(map[string]*Event),
+	}
+}
 
 // Event is an event that can be scheduled
 type Event struct {
@@ -107,4 +159,19 @@ func NewFromJSON(b []byte) (*Event, error) {
 		return nil, err
 	}
 	return e, nil
+}
+
+// Add adds event to the event list
+func Add(event *Event) {
+	events.Add(event)
+}
+
+// Get returns the event identified by name
+func Get(name string) *Event {
+	return events.Get(name)
+}
+
+// List returns all events in the event list
+func List() []*Event {
+	return events.List()
 }
