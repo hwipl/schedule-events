@@ -77,7 +77,7 @@ func (c *Command) Run() error {
 	return cmd.Run()
 }
 
-// Add add command to the command list
+// Add adds command to the command list
 func Add(command *Command) {
 	commands.Add(command)
 }
