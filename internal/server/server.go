@@ -51,7 +51,6 @@ func Run(addr string) {
 
 	// schedule all events
 	for _, e := range event.List() {
-		log.Println("Scheduling event:", e.Name)
 		e.Schedule()
 	}
 

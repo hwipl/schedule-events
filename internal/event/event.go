@@ -132,6 +132,8 @@ func (e *Event) scheduleWait(wait time.Duration) {
 
 // Schedule schedules the event for execution
 func (e *Event) Schedule() {
+	log.Println("Scheduling event:", e.Name)
+
 	// schedule first execution
 	wait := e.StartDate.Sub(time.Now())
 	e.scheduleWait(wait)
