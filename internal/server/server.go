@@ -51,7 +51,7 @@ func Run(addr string) {
 
 	// schedule all events
 	for _, e := range event.List() {
-		e.Schedule()
+		go e.Schedule()
 	}
 
 	// start http server
