@@ -121,7 +121,7 @@ func (e *Event) scheduleWait(wait time.Duration) {
 	if wait < 0 {
 		wait = 0
 	}
-	if time.Now().Add(wait).After(e.StopDate) {
+	if !e.StopDate.IsZero() && time.Now().Add(wait).After(e.StopDate) {
 		log.Println("Event done:", e.Name)
 		e.done = true
 		return
