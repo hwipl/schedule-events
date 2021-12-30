@@ -47,6 +47,15 @@ func handleEvents(w http.ResponseWriter, r *http.Request) {
 
 // Runs starts the server listening on addr
 func Run(addr string) {
+	log.Println("Starting server listening on:", addr)
+
+	// schedule all events
+	for _, e := range event.List() {
+		log.Println("Scheduling event:", e.Name)
+		e.Schedule()
+	}
+
+	// start http server
 	http.HandleFunc("/commands/", handleCommands)
 	http.HandleFunc("/events/", handleEvents)
 
