@@ -79,7 +79,7 @@ type Event struct {
 func (e *Event) Run() {
 	c := command.Get(e.Command)
 	if c == nil {
-		log.Println("command not found")
+		log.Println("command not found:", e.Command)
 		return
 	}
 	err := c.Run()
