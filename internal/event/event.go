@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"math/rand"
+	"os"
 	"sort"
 	"sync"
 	"time"
@@ -174,4 +175,26 @@ func Get(name string) *Event {
 // List returns all events in the event list
 func List() []*Event {
 	return events.List()
+}
+
+// EventsFromJSON loads events from the json file in path and adds them to
+// the event list
+func EventsFromJSON(path string) error {
+	// read file
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	// parse events
+	evts := []*Event{}
+	if err := json.Unmarshal(file, &evts); err != nil {
+		return err
+	}
+
+	// add events to event list
+	for _, e := range evts {
+		Add(e)
+	}
+	return nil
 }
