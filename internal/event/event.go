@@ -77,14 +77,16 @@ type Event struct {
 
 // Run executes the event's command once
 func (e *Event) Run() {
+	log.Printf("Event %s: running command: %s", e.Name, e.Command)
 	c := command.Get(e.Command)
 	if c == nil {
-		log.Println("command not found:", e.Command)
+		log.Printf("Event %s: command not found: %s", e.Name,
+			e.Command)
 		return
 	}
 	err := c.Run()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Event %s: command error: %s", e.Name, err)
 	}
 }
 
