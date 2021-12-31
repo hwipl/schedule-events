@@ -36,6 +36,40 @@ func TestEventListAdd(t *testing.T) {
 	test(evt4, evtList.Get(evt4.Name))
 }
 
+// TestEventListRemove tests removing events from an eventList
+func TestEventListRemove(t *testing.T) {
+	// prepare event list, some test events, test function
+	evtList := newEventList()
+	evt1 := &Event{Name: "evt1"}
+	evt2 := &Event{Name: "evt2"}
+	evt3 := &Event{Name: "evt3"}
+	evt4 := &Event{Name: "evt4"}
+	test := func(want, got []*Event) {
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	}
+
+	// remove non-existant event
+	evtList.Remove(evt1)
+	test([]*Event{}, evtList.List())
+
+	// remove single event
+	evtList.Add(evt1)
+	evtList.Add(evt2)
+	evtList.Add(evt3)
+	evtList.Add(evt4)
+	evtList.Remove(evt3)
+	test([]*Event{evt1, evt2, evt4}, evtList.List())
+
+	// remove everything
+	evtList.Remove(evt1)
+	evtList.Remove(evt2)
+	evtList.Remove(evt3) // double remove
+	evtList.Remove(evt4)
+	test([]*Event{}, evtList.List())
+}
+
 // TestEventListGet tests getting events from an eventList
 func TestEventListGet(t *testing.T) {
 	// prepare event list, some test events, test function
