@@ -84,6 +84,11 @@ type Event struct {
 	stop      chan struct{}
 }
 
+// init initializes the event
+func (e *Event) init() {
+	e.stop = make(chan struct{})
+}
+
 // Run executes the event's command once
 func (e *Event) Run() {
 	log.Printf("Event %s: running command: %s", e.Name, e.Command)
@@ -152,9 +157,6 @@ func (e *Event) scheduleWait(wait time.Duration) {
 func (e *Event) Schedule() {
 	log.Println("Scheduling event:", e.Name)
 
-	// initialize stop channel
-	e.stop = make(chan struct{})
-
 	// schedule first execution
 	wait := e.StartDate.Sub(time.Now())
 	e.scheduleWait(wait)
@@ -186,12 +188,19 @@ func (e *Event) JSON() ([]byte, error) {
 
 // NewFromJSON parses an event from json
 func NewFromJSON(b []byte) (*Event, error) {
-	e := &Event{}
+	e := NewEvent()
 	err := json.Unmarshal(b, e)
 	if err != nil {
 		return nil, err
 	}
 	return e, nil
+}
+
+// NewEvent returns a new Event
+func NewEvent() *Event {
+	e := &Event{}
+	e.init()
+	return e
 }
 
 // Add adds event to the event list
@@ -231,6 +240,7 @@ func EventsFromJSON(path string) error {
 
 	// add events to event list
 	for _, e := range evts {
+		e.init()
 		Add(e)
 	}
 	return nil

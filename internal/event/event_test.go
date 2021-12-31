@@ -248,6 +248,10 @@ func TestJSON(t *testing.T) {
 	if err != nil {
 		t.Errorf("got %v, want nil", err)
 	}
+	if e2.stop == nil {
+		t.Error("got e2.stop == nil, want e2.stop != nil")
+	}
+	e2.stop = nil // workaround for comparison
 	if *e1 != *e2 {
 		t.Errorf("got e1 != e2, want e1 == e2\ne1: %#v\ne2: %#v",
 			e1, e2)
