@@ -225,6 +225,25 @@ func TestSchedule(t *testing.T) {
 	e4.Schedule()
 }
 
+// TestStop tests stopping scheduled events
+func TestStop(t *testing.T) {
+	// one shot event
+	e1 := NewEvent()
+	e1.Name = "e1"
+	e1.StartDate = time.Now().Add(5 * time.Second)
+	go e1.Schedule()
+	e1.Stop()
+
+	// periodic event
+	e2 := NewEvent()
+	e2.Name = "e2"
+	e2.StartDate = time.Now()
+	e2.Periodic = true
+	e2.WaitMin = 100 * time.Millisecond
+	go e2.Schedule()
+	e2.Stop()
+}
+
 // TestJSON tests conversion from and to json
 func TestJSON(t *testing.T) {
 	e1 := &Event{
