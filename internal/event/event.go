@@ -31,6 +31,14 @@ func (e *eventList) Add(event *Event) {
 	e.m[event.Name] = event
 }
 
+// Remove removes event from the event list
+func (e *eventList) Remove(event *Event) {
+	e.Lock()
+	defer e.Unlock()
+
+	delete(e.m, event.Name)
+}
+
 // Get returns the event identified by its name
 func (e *eventList) Get(name string) *Event {
 	e.Lock()
@@ -124,7 +132,6 @@ func (e *Event) scheduleWait(wait time.Duration) {
 		wait = 0
 	}
 	if !e.StopDate.IsZero() && time.Now().Add(wait).After(e.StopDate) {
-		log.Println("Event done:", e.Name)
 		e.done = true
 		return
 	}
@@ -145,6 +152,10 @@ func (e *Event) Schedule() {
 		wait = e.nextWait()
 		e.scheduleWait(wait)
 	}
+
+	// event done, clean up
+	log.Println("Event done:", e.Name)
+	Remove(e)
 }
 
 // JSON returns the event as json
@@ -169,6 +180,11 @@ func NewFromJSON(b []byte) (*Event, error) {
 // Add adds event to the event list
 func Add(event *Event) {
 	events.Add(event)
+}
+
+// Remove removes event from the event list
+func Remove(event *Event) {
+	events.Remove(event)
 }
 
 // Get returns the event identified by name
