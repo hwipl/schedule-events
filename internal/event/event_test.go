@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// TestEventListAdd tests adding events to a eventList
+// TestEventListAdd tests adding events to an eventList
 func TestEventListAdd(t *testing.T) {
 	// prepare event list, some test events, test function
 	evtList := newEventList()
@@ -36,7 +36,7 @@ func TestEventListAdd(t *testing.T) {
 	test(evt4, evtList.Get(evt4.Name))
 }
 
-// TestEventListGet tests getting events from a eventList
+// TestEventListGet tests getting events from an eventList
 func TestEventListGet(t *testing.T) {
 	// prepare event list, some test events, test function
 	evtList := newEventList()
@@ -68,7 +68,7 @@ func TestEventListGet(t *testing.T) {
 	test(nil, evtList.Get("does not exist"))
 }
 
-// TestEventListList tests listing events in a eventList
+// TestEventListList tests listing events in an eventList
 func TestEventListList(t *testing.T) {
 	// prepare event list, some test events, test function
 	evtList := newEventList()
