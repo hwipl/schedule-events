@@ -81,6 +81,7 @@ type Event struct {
 	WaitMin   time.Duration
 	WaitMax   time.Duration
 	done      bool
+	stop      chan struct{}
 }
 
 // Run executes the event's command once
@@ -135,13 +136,24 @@ func (e *Event) scheduleWait(wait time.Duration) {
 		e.done = true
 		return
 	}
-	time.Sleep(wait)
-	e.Run()
+	timer := time.NewTimer(wait)
+	select {
+	case <-timer.C:
+		e.Run()
+	case <-e.stop:
+		if !timer.Stop() {
+			<-timer.C
+		}
+		e.done = true
+	}
 }
 
 // Schedule schedules the event for execution
 func (e *Event) Schedule() {
 	log.Println("Scheduling event:", e.Name)
+
+	// initialize stop channel
+	e.stop = make(chan struct{})
 
 	// schedule first execution
 	wait := e.StartDate.Sub(time.Now())
@@ -156,6 +168,11 @@ func (e *Event) Schedule() {
 	// event done, clean up
 	log.Println("Event done:", e.Name)
 	Remove(e)
+}
+
+// Stop stops a scheduled event
+func (e *Event) Stop() {
+	e.stop <- struct{}{}
 }
 
 // JSON returns the event as json
