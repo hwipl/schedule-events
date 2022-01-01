@@ -45,7 +45,7 @@ func handleEvents(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Runs starts the server listening on addr
+// Run starts the server listening on addr
 func Run(addr string) {
 	log.Println("Starting server listening on:", addr)
 
