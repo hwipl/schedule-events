@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 
+	"github.com/hwipl/schedule-events/internal/client"
 	"github.com/hwipl/schedule-events/internal/command"
 	"github.com/hwipl/schedule-events/internal/event"
 	"github.com/hwipl/schedule-events/internal/server"
@@ -57,5 +58,7 @@ func Run() {
 	parseCommandLine()
 	if serverMode {
 		server.Run(serverAddr)
+		return
 	}
+	client.Run(serverAddr, "")
 }
