@@ -11,12 +11,8 @@ import (
 	"github.com/hwipl/schedule-events/internal/event"
 )
 
-// getEvents retrieves the event list from the server and prints it
-func getEvents(addr string) {
-	log.Println("Getting events from server")
-
-	// get events from server
-	url := fmt.Sprintf("http://%s/events", addr)
+// get retrieves content from url
+func get(url string) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
@@ -29,6 +25,16 @@ func getEvents(addr string) {
 	if resp.StatusCode > 299 {
 		log.Fatal(resp.StatusCode)
 	}
+	return body
+}
+
+// getEvents retrieves the event list from the server and prints it
+func getEvents(addr string) {
+	log.Println("Getting events from server")
+
+	// get events from server
+	url := fmt.Sprintf("http://%s/events", addr)
+	body := get(url)
 
 	// make sure it's a valid json Event array
 	events := []*event.Event{}
