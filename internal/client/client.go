@@ -52,7 +52,11 @@ func getEvents(addr string) {
 func Run(addr, op string) {
 	log.Println("Starting client connecting to:", addr)
 	switch op {
-	default:
+	case "get-events":
 		getEvents(addr)
+	case "":
+		getEvents(addr)
+	default:
+		log.Fatal("invalid operation: ", op)
 	}
 }

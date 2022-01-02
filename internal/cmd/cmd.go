@@ -14,6 +14,7 @@ var (
 	// parsed command line arguments
 	commandsFile = "config.json"
 	eventsFile   = "events.json"
+	operation    = "get-events"
 	serverAddr   = ":8080"
 	serverMode   = false
 )
@@ -25,6 +26,8 @@ func parseCommandLine() {
 		"read commands from `file`")
 	flag.StringVar(&eventsFile, "events", eventsFile,
 		"read events from `file`")
+	flag.StringVar(&operation, "operation", operation,
+		"run `operation` on server")
 	flag.StringVar(&serverAddr, "address", serverAddr,
 		"listen on or connect to `addr`")
 	flag.BoolVar(&serverMode, "server", serverMode, "run as server")
@@ -60,5 +63,5 @@ func Run() {
 		server.Run(serverAddr)
 		return
 	}
-	client.Run(serverAddr, "")
+	client.Run(serverAddr, operation)
 }
