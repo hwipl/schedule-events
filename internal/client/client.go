@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/hwipl/schedule-events/internal/command"
 	"github.com/hwipl/schedule-events/internal/event"
 )
 
@@ -26,6 +27,26 @@ func get(url string) []byte {
 		log.Fatal(resp.StatusCode)
 	}
 	return body
+}
+
+// getCommands retrieves the command list from the server and prints it
+func getCommands(addr string) {
+	log.Println("Getting commands from server")
+
+	// get commands from server
+	url := fmt.Sprintf("http://%s/commands", addr)
+	body := get(url)
+
+	// make sure it's a valid json Command array
+	commands := []*command.Command{}
+	if err := json.Unmarshal(body, &commands); err != nil {
+		log.Fatal(err)
+	}
+
+	// print as indented json
+	var out bytes.Buffer
+	json.Indent(&out, body, "", "    ")
+	fmt.Println(&out)
 }
 
 // getEvents retrieves the event list from the server and prints it
@@ -52,6 +73,8 @@ func getEvents(addr string) {
 func Run(addr, op string) {
 	log.Println("Starting client connecting to:", addr)
 	switch op {
+	case "get-commands":
+		getCommands(addr)
 	case "get-events":
 		getEvents(addr)
 	case "":
