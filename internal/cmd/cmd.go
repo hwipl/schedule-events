@@ -12,7 +12,7 @@ import (
 
 var (
 	// parsed command line arguments
-	commandsFile = "config.json"
+	commandsFile = "commands.json"
 	eventsFile   = "events.json"
 	operation    = "get-events"
 	serverAddr   = ":8080"
