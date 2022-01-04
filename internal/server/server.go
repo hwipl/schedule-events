@@ -60,14 +60,19 @@ func handleEventsPost(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	event, err := event.NewFromJSON(body)
+	evt, err := event.NewFromJSON(body)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	// TODO: do something with the event
-	log.Println(event)
+	// TODO: add event validation?
+
+	// add and schedule event
+	log.Println("Adding new event:", evt.Name)
+	if event.Add(evt) {
+		go evt.Schedule()
+	}
 }
 
 // handleEvents handles a client "events" request
