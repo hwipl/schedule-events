@@ -24,11 +24,18 @@ type eventList struct {
 }
 
 // Add adds event to the event list
-func (e *eventList) Add(event *Event) {
+func (e *eventList) Add(event *Event) bool {
 	e.Lock()
 	defer e.Unlock()
 
+	// do not overwrite existing entry
+	if _, ok := e.m[event.Name]; ok {
+		return false
+	}
+
+	// save new event
 	e.m[event.Name] = event
+	return true
 }
 
 // Remove removes event from the event list
@@ -204,8 +211,8 @@ func NewEvent() *Event {
 }
 
 // Add adds event to the event list
-func Add(event *Event) {
-	events.Add(event)
+func Add(event *Event) bool {
+	return events.Add(event)
 }
 
 // Remove removes event from the event list

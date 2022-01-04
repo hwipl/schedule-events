@@ -21,17 +21,21 @@ func TestEventListAdd(t *testing.T) {
 	}
 
 	// test adding new entry to empty list
-	evtList.Add(evt1)
+	if !evtList.Add(evt1) {
+		t.Error("could not add new event:", evt1)
+	}
 	test(evt1, evtList.Get(evt1.Name))
 
 	// test overwriting existing entry
-	evtList.Add(evt2)
-	test(evt2, evtList.Get(evt1.Name))
+	if evtList.Add(evt2) {
+		t.Error("could overwrite existing event:", evt2)
+	}
+	test(evt1, evtList.Get(evt2.Name))
 
 	// test adding more entries
 	evtList.Add(evt3)
 	evtList.Add(evt4)
-	test(evt2, evtList.Get(evt2.Name))
+	test(evt1, evtList.Get(evt1.Name))
 	test(evt3, evtList.Get(evt3.Name))
 	test(evt4, evtList.Get(evt4.Name))
 }
