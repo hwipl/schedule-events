@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -69,6 +70,35 @@ func getEvents(addr string) {
 	fmt.Println(&out)
 }
 
+// setEvents sends the client's event list to the server for scheduling
+func setEvents(addr string) {
+	log.Println("Sending events to server")
+
+	// send events to server
+	url := fmt.Sprintf("http://%s/events/", addr)
+	for _, e := range event.List() {
+		log.Println("Sending event:", e.Name)
+
+		b, err := e.JSON()
+		if err != nil {
+			log.Fatal(err)
+		}
+		r := bytes.NewReader(b)
+		resp, err := http.Post(url, "application/json", r)
+		if err != nil {
+			log.Println(err)
+		}
+		defer resp.Body.Close()
+		io.Copy(ioutil.Discard, resp.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		if resp.StatusCode > 299 {
+			log.Println(resp.StatusCode)
+		}
+	}
+}
+
 // Run starts the client connecting to addr and executing op
 func Run(addr, op string) {
 	log.Println("Starting client connecting to:", addr)
@@ -77,6 +107,8 @@ func Run(addr, op string) {
 		getCommands(addr)
 	case "get-events":
 		getEvents(addr)
+	case "set-events":
+		setEvents(addr)
 	case "":
 		getEvents(addr)
 	default:
