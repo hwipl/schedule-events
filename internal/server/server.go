@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -85,6 +86,22 @@ func handleEvents(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleStatusGet handles a client "status" GET request
+func handleStatusGet(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprint(w, "Status: OK\n")
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// handleStatus handles a client "status" request
+func handleStatus(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		handleStatusGet(w, r)
+	}
+}
+
 // Run starts the server listening on addr
 func Run(addr string) {
 	log.Println("Starting server listening on:", addr)
@@ -97,6 +114,7 @@ func Run(addr string) {
 	// start http server
 	http.HandleFunc("/commands/", handleCommands)
 	http.HandleFunc("/events/", handleEvents)
+	http.HandleFunc("/status/", handleStatus)
 
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
