@@ -1,11 +1,13 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/hwipl/schedule-events/internal/command"
 	"github.com/hwipl/schedule-events/internal/event"
@@ -15,6 +17,11 @@ const (
 	// maxEventPostLength is the maximum content length of an
 	// event post request
 	maxEventPostLength = 512
+)
+
+var (
+	// server is the http server
+	server *http.Server
 )
 
 // handleCommandsGet handles a client "commands" GET request
@@ -102,6 +109,14 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Shutdown shuts the server down
+func Shutdown() {
+	err := server.Shutdown(context.Background())
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 // Run starts the server listening on addr
 func Run(addr string) {
 	log.Println("Starting server listening on:", addr)
@@ -116,5 +131,12 @@ func Run(addr string) {
 	http.HandleFunc("/events/", handleEvents)
 	http.HandleFunc("/status/", handleStatus)
 
-	log.Fatal(http.ListenAndServe(addr, nil))
+	server = &http.Server{Addr: addr}
+	log.Println(server.ListenAndServe())
+
+	// server stopped, stop all events
+	for _, e := range event.List() {
+		e.Stop()
+	}
+	time.Sleep(1 * time.Second) // TODO: improve
 }
