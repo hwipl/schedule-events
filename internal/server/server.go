@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -101,11 +102,21 @@ func handleStatusGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleStatusPost handles a client "status" GET request
+func handleStatusPost(w http.ResponseWriter, r *http.Request) {
+	switch html.EscapeString(r.URL.Path) {
+	case "/status/shutdown":
+		Shutdown()
+	}
+}
+
 // handleStatus handles a client "status" request
 func handleStatus(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handleStatusGet(w, r)
+	case http.MethodPost:
+		handleStatusPost(w, r)
 	}
 }
 
