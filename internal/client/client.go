@@ -99,6 +99,25 @@ func setEvents(addr string) {
 	}
 }
 
+// shutdown sends a shutdown request to the server
+func shutdown(addr string) {
+	log.Println("Sending shutdown to server")
+
+	url := fmt.Sprintf("http://%s/status/shutdown", addr)
+	resp, err := http.Post(url, "", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	io.Copy(ioutil.Discard, resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.StatusCode > 299 {
+		log.Fatal(resp.StatusCode)
+	}
+}
+
 // Run starts the client connecting to addr and executing op
 func Run(addr, op string) {
 	log.Println("Starting client connecting to:", addr)
@@ -109,6 +128,8 @@ func Run(addr, op string) {
 		getEvents(addr)
 	case "set-events":
 		setEvents(addr)
+	case "shutdown":
+		shutdown(addr)
 	case "":
 		getEvents(addr)
 	default:
