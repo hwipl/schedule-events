@@ -86,15 +86,15 @@ func setEvents(addr string) {
 		r := bytes.NewReader(b)
 		resp, err := http.Post(url, "application/json", r)
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 		defer resp.Body.Close()
 		io.Copy(ioutil.Discard, resp.Body)
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 		if resp.StatusCode > 299 {
-			log.Println(resp.StatusCode)
+			log.Fatal(resp.StatusCode)
 		}
 	}
 }
