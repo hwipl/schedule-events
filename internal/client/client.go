@@ -70,6 +70,15 @@ func getEvents(addr string) {
 	fmt.Println(&out)
 }
 
+// getStatus retrieves the status from the server and prints it
+func getStatus(addr string) {
+	log.Println("Getting status from server")
+
+	url := fmt.Sprintf("http://%s/status", addr)
+	body := get(url)
+	fmt.Println(string(body))
+}
+
 // setEvents sends the client's event list to the server for scheduling
 func setEvents(addr string) {
 	log.Println("Sending events to server")
@@ -128,6 +137,8 @@ func Run(addr, op string) {
 		getEvents(addr)
 	case "set-events":
 		setEvents(addr)
+	case "get-status":
+		getStatus(addr)
 	case "shutdown":
 		shutdown(addr)
 	case "":
