@@ -128,6 +128,13 @@ func Shutdown() {
 	}
 }
 
+// Stop stops all events on the server
+func Stop() {
+	for _, e := range event.List() {
+		e.Stop()
+	}
+}
+
 // Run starts the server listening on addr
 func Run(addr string) {
 	log.Println("Starting server listening on:", addr)
@@ -146,8 +153,6 @@ func Run(addr string) {
 	log.Println(server.ListenAndServe())
 
 	// server stopped, stop all events
-	for _, e := range event.List() {
-		e.Stop()
-	}
+	Stop()
 	time.Sleep(1 * time.Second) // TODO: improve
 }
