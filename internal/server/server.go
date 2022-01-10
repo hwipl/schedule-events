@@ -107,6 +107,8 @@ func handleStatusPost(w http.ResponseWriter, r *http.Request) {
 	switch html.EscapeString(r.URL.Path) {
 	case "/status/shutdown":
 		Shutdown()
+	case "/status/stop":
+		Stop()
 	}
 }
 
