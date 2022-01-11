@@ -108,11 +108,9 @@ func setEvents(addr string) {
 	}
 }
 
-// shutdown sends a shutdown request to the server
-func shutdown(addr string) {
-	log.Println("Sending shutdown to server")
-
-	url := fmt.Sprintf("http://%s/status/shutdown", addr)
+// setStatus sends status request to server
+func setStatus(addr, status string) {
+	url := fmt.Sprintf("http://%s/status/%s", addr, status)
 	resp, err := http.Post(url, "", nil)
 	if err != nil {
 		log.Fatal(err)
@@ -125,6 +123,18 @@ func shutdown(addr string) {
 	if resp.StatusCode > 299 {
 		log.Fatal(resp.StatusCode)
 	}
+}
+
+// shutdown sends a shutdown request to the server
+func shutdown(addr string) {
+	log.Println("Sending shutdown to server")
+	setStatus(addr, "shutdown")
+}
+
+// stop sends a stop request to the server
+func stop(addr string) {
+	log.Println("Sending stop to server")
+	setStatus(addr, "stop")
 }
 
 // Run starts the client connecting to addr and executing op
@@ -141,6 +151,8 @@ func Run(addr, op string) {
 		getStatus(addr)
 	case "shutdown":
 		shutdown(addr)
+	case "stop":
+		stop(addr)
 	case "":
 		getEvents(addr)
 	default:
