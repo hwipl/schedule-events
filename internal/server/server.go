@@ -84,6 +84,16 @@ func handleEventsPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleEventsDelete handles a client "events" DELETE request
+func handleEventsDelete(w http.ResponseWriter, r *http.Request) {
+	name := html.EscapeString(r.URL.Path)[len("/events/"):]
+	e := event.Get(name)
+	if e == nil {
+		return
+	}
+	e.Stop()
+}
+
 // handleEvents handles a client "events" request
 func handleEvents(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -91,6 +101,8 @@ func handleEvents(w http.ResponseWriter, r *http.Request) {
 		handleEventsGet(w, r)
 	case http.MethodPost:
 		handleEventsPost(w, r)
+	case http.MethodDelete:
+		handleEventsDelete(w, r)
 	}
 }
 
