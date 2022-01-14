@@ -137,6 +137,33 @@ func stop(addr string) {
 	setStatus(addr, "stop")
 }
 
+// delEvents deletes events on the server
+func delEvents(addr string) {
+	log.Println("Deleting events on server")
+
+	for _, e := range event.List() {
+		log.Println("Deleting event:", e.Name)
+
+		url := fmt.Sprintf("http://%s/events/%s", addr, e.Name)
+		req, err := http.NewRequest(http.MethodDelete, url, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+		io.Copy(ioutil.Discard, resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if resp.StatusCode > 299 {
+			log.Fatal(resp.StatusCode)
+		}
+	}
+}
+
 // Run starts the client connecting to addr and executing op
 func Run(addr, op string) {
 	log.Println("Starting client connecting to:", addr)
@@ -147,6 +174,8 @@ func Run(addr, op string) {
 		getEvents(addr)
 	case "set-events":
 		setEvents(addr)
+	case "delete-events":
+		delEvents(addr)
 	case "get-status":
 		getStatus(addr)
 	case "shutdown":
