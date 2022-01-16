@@ -79,6 +79,19 @@ func getStatus(addr string) {
 	fmt.Println(string(body))
 }
 
+// handleResponse a response discarding the body and checking the status code
+func handleResponse(resp *http.Response) {
+	defer resp.Body.Close()
+	_, err := io.Copy(ioutil.Discard, resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.StatusCode > 299 {
+		log.Fatal(resp.StatusCode)
+	}
+
+}
+
 // setEvents sends the client's event list to the server for scheduling
 func setEvents(addr string) {
 	log.Println("Sending events to server")
@@ -97,14 +110,7 @@ func setEvents(addr string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer resp.Body.Close()
-		io.Copy(ioutil.Discard, resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if resp.StatusCode > 299 {
-			log.Fatal(resp.StatusCode)
-		}
+		handleResponse(resp)
 	}
 }
 
@@ -115,14 +121,7 @@ func setStatus(addr, status string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-	io.Copy(ioutil.Discard, resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if resp.StatusCode > 299 {
-		log.Fatal(resp.StatusCode)
-	}
+	handleResponse(resp)
 }
 
 // shutdown sends a shutdown request to the server
@@ -153,14 +152,7 @@ func delEvents(addr string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer resp.Body.Close()
-		io.Copy(ioutil.Discard, resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if resp.StatusCode > 299 {
-			log.Fatal(resp.StatusCode)
-		}
+		handleResponse(resp)
 	}
 }
 
