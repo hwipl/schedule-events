@@ -47,3 +47,22 @@ Example json event list:
 	}
 ]
 ```
+
+Example json event list for deleting the events above:
+
+```json
+[
+	{
+		"Name":"ls1"
+	},
+	{
+		"Name":"date1"
+	},
+	{
+		"Name":"date-periodic1"
+	},
+	{
+		"Name":"date-periodic2"
+	}
+]
+```
