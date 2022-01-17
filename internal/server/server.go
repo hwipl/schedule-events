@@ -25,14 +25,39 @@ var (
 	server *http.Server
 )
 
-// handleCommandsGet handles a client "commands" GET request
-func handleCommandsGet(w http.ResponseWriter, r *http.Request) {
+// handleCommandsGetAll handles a client "commands" GET request for all
+// commands on the server
+func handleCommandsGetAll(w http.ResponseWriter, r *http.Request) {
 	cmds := command.List()
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(cmds)
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// handleCommandsGetOne handles a client "commands" GET request for a specific
+// command identified by its name n
+func handleCommandsGetOne(w http.ResponseWriter, r *http.Request, n string) {
+	cmd := command.Get(n)
+	if cmd == nil {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(cmd)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// handleCommandsGet handles a client "commands" GET request
+func handleCommandsGet(w http.ResponseWriter, r *http.Request) {
+	name := html.EscapeString(r.URL.Path)[len("/commands/"):]
+	if name == "" {
+		handleCommandsGetAll(w, r)
+		return
+	}
+	handleCommandsGetOne(w, r, name)
 }
 
 // handleCommands handles a client "commands" request
