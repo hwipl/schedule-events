@@ -68,14 +68,39 @@ func handleCommands(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleEventsGet handles a client "events" GET request
-func handleEventsGet(w http.ResponseWriter, r *http.Request) {
+// handleEventsGetAll handles a client "events" GET request for all events on
+// the server
+func handleEventsGetAll(w http.ResponseWriter, r *http.Request) {
 	events := event.List()
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(events)
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// handleEventsGetOne handles a client "events" GET request for a specific
+// event identified by its name n
+func handleEventsGetOne(w http.ResponseWriter, r *http.Request, n string) {
+	evt := event.Get(n)
+	if evt == nil {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(evt)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// handleEventsGet handles a client "events" GET request
+func handleEventsGet(w http.ResponseWriter, r *http.Request) {
+	name := html.EscapeString(r.URL.Path)[len("/events/"):]
+	if name == "" {
+		handleEventsGetAll(w, r)
+		return
+	}
+	handleEventsGetOne(w, r, name)
 }
 
 // handleEventsPost handles a client "events" POST request
