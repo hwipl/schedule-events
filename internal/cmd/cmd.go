@@ -39,10 +39,10 @@ func parseCommandLine() {
 	}
 
 	// parse commands file
-	if serverMode {
-		if commandsFile == "" {
-			log.Fatal("no commands file specified")
-		}
+	if serverMode && commandsFile == "" {
+		log.Fatal("no commands file specified")
+	}
+	if commandsFile != "" {
 		err := command.CommandsFromJSON(commandsFile)
 		if err != nil {
 			log.Fatal(err)
