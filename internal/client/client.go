@@ -30,10 +30,8 @@ func get(url string) []byte {
 	return body
 }
 
-// getCommands retrieves the command list from the server and prints it
-func getCommands(addr string) {
-	log.Println("Getting commands from server")
-
+// getCommands retrieves all commands from the server and prints it
+func getCommandsAll(addr string) {
 	// get commands from server
 	url := fmt.Sprintf("http://%s/commands", addr)
 	body := get(url)
@@ -48,6 +46,38 @@ func getCommands(addr string) {
 	var out bytes.Buffer
 	json.Indent(&out, body, "", "    ")
 	fmt.Println(&out)
+}
+
+// getCommands retrieves the command with name from the server and prints it
+func getCommandsOne(addr, name string) {
+	// get command from server
+	url := fmt.Sprintf("http://%s/commands/%s", addr, name)
+	body := get(url)
+
+	// make sure it's a valid json Command
+	cmd := command.Command{}
+	if err := json.Unmarshal(body, &cmd); err != nil {
+		log.Fatal(err)
+	}
+
+	// print as indented json
+	var out bytes.Buffer
+	json.Indent(&out, body, "", "    ")
+	fmt.Println(&out)
+}
+
+// getCommands retrieves the command list from the server and prints it
+func getCommands(addr string) {
+	cmds := command.List()
+	if len(cmds) == 0 {
+		log.Println("Getting all commands from server")
+		getCommandsAll(addr)
+		return
+	}
+	for _, cmd := range cmds {
+		log.Println("Getting command from server:", cmd.Name)
+		getCommandsOne(addr, cmd.Name)
+	}
 }
 
 // getEvents retrieves the event list from the server and prints it
