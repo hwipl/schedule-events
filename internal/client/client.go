@@ -80,10 +80,8 @@ func getCommands(addr string) {
 	}
 }
 
-// getEvents retrieves the event list from the server and prints it
-func getEvents(addr string) {
-	log.Println("Getting events from server")
-
+// getEventsAll retrieves all events from the server and prints them
+func getEventsAll(addr string) {
 	// get events from server
 	url := fmt.Sprintf("http://%s/events", addr)
 	body := get(url)
@@ -98,6 +96,38 @@ func getEvents(addr string) {
 	var out bytes.Buffer
 	json.Indent(&out, body, "", "    ")
 	fmt.Println(&out)
+}
+
+// getEventsOne retrieves the event with name from the server and prints it
+func getEventsOne(addr, name string) {
+	// get event from server
+	url := fmt.Sprintf("http://%s/events/%s", addr, name)
+	body := get(url)
+
+	// make sure it's a valid json Event
+	evt := event.Event{}
+	if err := json.Unmarshal(body, &evt); err != nil {
+		log.Fatal(err)
+	}
+
+	// print as indented json
+	var out bytes.Buffer
+	json.Indent(&out, body, "", "    ")
+	fmt.Println(&out)
+}
+
+// getEvents retrieves the event list from the server and prints it
+func getEvents(addr string) {
+	evts := event.List()
+	if len(evts) == 0 {
+		log.Println("Getting all events from server")
+		getEventsAll(addr)
+		return
+	}
+	for _, evt := range evts {
+		log.Println("Getting event from server:", evt.Name)
+		getEventsOne(addr, evt.Name)
+	}
 }
 
 // getStatus retrieves the status from the server and prints it
