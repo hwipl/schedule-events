@@ -30,7 +30,7 @@ func get(url string) []byte {
 	return body
 }
 
-// getCommands retrieves all commands from the server and prints it
+// getCommandsAll retrieves all commands from the server and prints them
 func getCommandsAll(addr string) {
 	// get commands from server
 	url := fmt.Sprintf("http://%s/commands", addr)
@@ -48,7 +48,7 @@ func getCommandsAll(addr string) {
 	fmt.Println(&out)
 }
 
-// getCommands retrieves the command with name from the server and prints it
+// getCommandsOne retrieves the command with name from the server and prints it
 func getCommandsOne(addr, name string) {
 	// get command from server
 	url := fmt.Sprintf("http://%s/commands/%s", addr, name)
