@@ -41,6 +41,7 @@ func handleCommandsGetAll(w http.ResponseWriter, r *http.Request) {
 func handleCommandsGetOne(w http.ResponseWriter, r *http.Request, n string) {
 	cmd := command.Get(n)
 	if cmd == nil {
+		http.NotFound(w, r)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -84,6 +85,7 @@ func handleEventsGetAll(w http.ResponseWriter, r *http.Request) {
 func handleEventsGetOne(w http.ResponseWriter, r *http.Request, n string) {
 	evt := event.Get(n)
 	if evt == nil {
+		http.NotFound(w, r)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -139,6 +141,7 @@ func handleEventsDelete(w http.ResponseWriter, r *http.Request) {
 	name := html.EscapeString(r.URL.Path)[len("/events/"):]
 	e := event.Get(name)
 	if e == nil {
+		http.NotFound(w, r)
 		return
 	}
 	e.Stop()
