@@ -38,12 +38,19 @@ func (e *eventList) Add(event *Event) bool {
 	return true
 }
 
-// Remove removes event from the event list
-func (e *eventList) Remove(event *Event) {
+// Remove removes event from the event list and returns the removed event
+func (e *eventList) Remove(event *Event) *Event {
 	e.Lock()
 	defer e.Unlock()
 
+	evt := e.m[event.Name]
+	if evt != event {
+		// not the same event, abort
+		return nil
+	}
 	delete(e.m, event.Name)
+
+	return evt
 }
 
 // Get returns the event identified by its name
@@ -54,11 +61,9 @@ func (e *eventList) Get(name string) *Event {
 	return e.m[name]
 }
 
-// List returns all events sorted by their name
-func (e *eventList) List() []*Event {
-	e.Lock()
-	defer e.Unlock()
-
+// list returns all events sorted by their name; must be called while holding
+// the mutex
+func (e *eventList) list() []*Event {
 	evts := []*Event{}
 	for _, evt := range e.m {
 		evts = append(evts, evt)
@@ -68,6 +73,24 @@ func (e *eventList) List() []*Event {
 			evts[j].Name
 	})
 	return evts
+}
+
+// Flush removes all events from the event list and returns the removed events
+func (e *eventList) Flush() []*Event {
+	e.Lock()
+	defer e.Unlock()
+
+	evts := e.list()
+	e.m = make(map[string]*Event)
+	return evts
+}
+
+// List returns all events sorted by their name
+func (e *eventList) List() []*Event {
+	e.Lock()
+	defer e.Unlock()
+
+	return e.list()
 }
 
 // newEventList returns a new eventList
@@ -216,13 +239,18 @@ func Add(event *Event) bool {
 }
 
 // Remove removes event from the event list
-func Remove(event *Event) {
-	events.Remove(event)
+func Remove(event *Event) *Event {
+	return events.Remove(event)
 }
 
 // Get returns the event identified by name
 func Get(name string) *Event {
 	return events.Get(name)
+}
+
+// Flush removes all events in the event list and returns the removed events
+func Flush() []*Event {
+	return events.Flush()
 }
 
 // List returns all events in the event list

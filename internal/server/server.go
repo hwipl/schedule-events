@@ -138,10 +138,17 @@ func handleEventsPost(w http.ResponseWriter, r *http.Request) {
 
 // handleEventsDelete handles a client "events" DELETE request
 func handleEventsDelete(w http.ResponseWriter, r *http.Request) {
+	// find event
 	name := html.EscapeString(r.URL.Path)[len("/events/"):]
 	e := event.Get(name)
 	if e == nil {
 		http.NotFound(w, r)
+		return
+	}
+
+	// remove and stop event
+	if event.Remove(e) == nil {
+		// already removed
 		return
 	}
 	e.Stop()
@@ -197,7 +204,7 @@ func Shutdown() {
 
 // Stop stops all events on the server
 func Stop() {
-	for _, e := range event.List() {
+	for _, e := range event.Flush() {
 		e.Stop()
 	}
 }
