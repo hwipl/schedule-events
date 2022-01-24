@@ -25,6 +25,12 @@ var (
 	server *http.Server
 )
 
+// internalError sends and internal server error to the client
+func internalError(w http.ResponseWriter) {
+	http.Error(w, "500 internal server error",
+		http.StatusInternalServerError)
+}
+
 // handleCommandsGetAll handles a client "commands" GET request for all
 // commands on the server
 func handleCommandsGetAll(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +39,7 @@ func handleCommandsGetAll(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(cmds)
 	if err != nil {
 		log.Println(err)
+		internalError(w)
 	}
 }
 
@@ -48,6 +55,7 @@ func handleCommandsGetOne(w http.ResponseWriter, r *http.Request, n string) {
 	err := json.NewEncoder(w).Encode(cmd)
 	if err != nil {
 		log.Println(err)
+		internalError(w)
 	}
 }
 
@@ -77,6 +85,7 @@ func handleEventsGetAll(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(events)
 	if err != nil {
 		log.Println(err)
+		internalError(w)
 	}
 }
 
@@ -92,6 +101,7 @@ func handleEventsGetOne(w http.ResponseWriter, r *http.Request, n string) {
 	err := json.NewEncoder(w).Encode(evt)
 	if err != nil {
 		log.Println(err)
+		internalError(w)
 	}
 }
 
@@ -171,6 +181,7 @@ func handleStatusGet(w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Status: OK\n")
 	if err != nil {
 		log.Println(err)
+		internalError(w)
 	}
 }
 
