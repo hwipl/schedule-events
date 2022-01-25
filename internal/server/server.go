@@ -25,7 +25,7 @@ var (
 	server *http.Server
 )
 
-// internalError sends and internal server error to the client
+// internalError sends an internal server error to the client
 func internalError(w http.ResponseWriter) {
 	http.Error(w, "500 internal server error",
 		http.StatusInternalServerError)
