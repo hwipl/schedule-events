@@ -31,6 +31,11 @@ func internalError(w http.ResponseWriter) {
 		http.StatusInternalServerError)
 }
 
+// badRequest sends a bad request error to the client
+func badRequest(w http.ResponseWriter) {
+	http.Error(w, "400 bad request", http.StatusBadRequest)
+}
+
 // handleCommandsGetAll handles a client "commands" GET request for all
 // commands on the server
 func handleCommandsGetAll(w http.ResponseWriter, r *http.Request) {
@@ -117,23 +122,27 @@ func handleEventsGet(w http.ResponseWriter, r *http.Request) {
 
 // handleEventsPost handles a client "events" POST request
 func handleEventsPost(w http.ResponseWriter, r *http.Request) {
-	// TODO: add error replies?
+	// TODO: add more specific replies?
 	if r.Header.Get("Content-Type") != "application/json" {
 		log.Println("invalid content type")
+		badRequest(w)
 		return
 	}
 	if r.ContentLength <= 0 || r.ContentLength > maxEventPostLength {
 		log.Println("invalid content length")
+		badRequest(w)
 		return
 	}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
+		badRequest(w)
 		return
 	}
 	evt, err := event.NewFromJSON(body)
 	if err != nil {
 		log.Println(err)
+		badRequest(w)
 		return
 	}
 
