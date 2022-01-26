@@ -146,7 +146,22 @@ func handleEventsPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: add event validation?
+	// check if event is valid
+	if len(evt.Name) > 256 ||
+		len(evt.Command) > 256 ||
+		command.Get(evt.Command) == nil ||
+		!evt.StopDate.IsZero() && evt.StopDate.Before(evt.StartDate) ||
+		!evt.StopDate.IsZero() && evt.StopDate.Before(time.Now()) ||
+		evt.Timeout < 0 ||
+		evt.WaitMin < 0 ||
+		evt.WaitMax < 0 ||
+		evt.WaitMax != 0 && evt.WaitMax < evt.WaitMin ||
+		evt.Periodic && evt.WaitMin == 0 {
+
+		log.Println("invalid event")
+		badRequest(w)
+		return
+	}
 
 	// add and schedule event
 	log.Println("Adding new event:", evt.Name)
