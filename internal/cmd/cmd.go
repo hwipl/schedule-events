@@ -15,7 +15,7 @@ var (
 	commandsFile = "commands.json"
 	eventsFile   = "events.json"
 	operation    = "get-events"
-	serverAddr   = ":8080"
+	serverAddr   = "localhost:8080"
 	serverMode   = false
 )
 
